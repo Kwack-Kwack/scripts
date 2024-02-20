@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Player Filters
 // @namespace    dev.kwack.torn.player-filters
-// @version      0.0.1
+// @version      0.0.2
 // @description  Adds player filters to various userlists in Torn City
 // @author       Kwack [2190604]
 // @match        https://www.torn.com/*
@@ -9,7 +9,8 @@
 // @grant        none
 // ==/UserScript==
 
-// THIS SCRIPT IS STILL BEING TESTED, do NOT expect all to work perfectly. If you find any issues, please report them to me on Torn or Discord.
+// THIS SCRIPT IS STILL BEING TESTED, do NOT expect all to work perfectly.
+// If you find any issues, please report them to me on Torn or Discord.
 
 (() => {
 	const STATUS_ENUM = {
@@ -32,7 +33,8 @@
 
 	const FILTERS = [
 		{
-			check: () => document.location.pathname === "/blacklist.php" || document.location.pathname === "/friendlist.php",
+			check: () =>
+				document.location.pathname === "/blacklist.php" || document.location.pathname === "/friendlist.php",
 			table: () => $("div.content-wrapper > div.blacklist > ul.user-info-blacklist-wrap")[0],
 			insertFilters: (f) => f.insertBefore($("div.content-wrapper > div.blacklist > hr")),
 			rows: (t) => t.children,
@@ -102,10 +104,9 @@
 				},
 				status: {
 					type: "select",
-					options: Object.entries(STATUS_ENUM).filter(([k]) => k !== "ABROAD" && k !== "TRAVELING" && k !== "JAIL").reduce(
-						(a, [k, v]) => ((a[k] = v), a),
-						{}
-					),
+					options: Object.entries(STATUS_ENUM)
+						.filter(([k]) => k !== "ABROAD" && k !== "TRAVELING" && k !== "JAIL")
+						.reduce((a, [k, v]) => ((a[k] = v), a), {}),
 					fn: (r) =>
 						STATUS_ENUM[r.find("span.status > span:last-child").text().trim().toUpperCase()] ??
 						STATUS_ENUM.UNKNOWN,
@@ -136,10 +137,7 @@
 			if (!filter.table()) return;
 			showAllRows(filter);
 			f = createFilter(filter);
-		}).observe(
-			document.body,
-			{ childList: true, subtree: true }
-		);
+		}).observe(document.body, { childList: true, subtree: true });
 		injectStyle();
 	}
 
@@ -179,6 +177,7 @@
 							class: "kw--filter-min kw--filter-row",
 							min,
 							max,
+							style: "min-width: 50px;",
 						})
 							.attr("placeholder", "min")
 							.data("filter", { name, type, is: "min", fn })
@@ -190,6 +189,7 @@
 							class: "kw--filter-max kw--filter-row",
 							min,
 							max,
+							style: "min-width: 50px;",
 						})
 							.attr("placeholder", "max")
 							.data("filter", { name, type, is: "max", fn })
@@ -202,12 +202,22 @@
 					})
 						.data("filter", { name, type, fn })
 						.on("change", () => handleFilterChange(filterOptions))
-						.append($("<option/>", { value: "", text: "ANY", style: "background-color: var(--btn-disable-color)"}))
+						.append(
+							$("<option/>", {
+								value: "",
+								text: "ANY",
+							})
+						)
 						.appendTo(filter);
 					Object.entries(options)
 						.filter(([key, value]) => key !== "UNKNOWN" || value !== "UNKNOWN")
 						.forEach(([key, value]) => {
-							select.append($("<option/>", { value: key, text: value, style: "background-color: var(--btn-disable-color)" }));
+							select.append(
+								$("<option/>", {
+									value: key,
+									text: value,
+								})
+							);
 						});
 					break;
 			}
@@ -285,7 +295,7 @@
 				background: #000;
 				border-color: #444;
 			}
-			`
+			`;
 		if (typeof GM_addStyle !== "undefined") return GM_addStyle(style);
 		$(document.head).append($("<style/>", { text: style }));
 	}
