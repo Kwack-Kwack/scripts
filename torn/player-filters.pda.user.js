@@ -127,7 +127,10 @@
 		},
 		{
 			check: () => document.location.pathname === "/bounties.php",
-			table: () => $("div.content-wrapper > div.newspaper-wrap div.bounties-wrap > div.bounties-cont > ul.bounties-list")[0],
+			table: () =>
+				$(
+					"div.content-wrapper > div.newspaper-wrap div.bounties-wrap > div.bounties-cont > ul.bounties-list"
+				)[0],
 			insertFilters: (f) => f.insertBefore($("div.content-wrapper > div.newspaper-wrap div.bounties-wrap")),
 			rows: (t) => [...t.children].filter((c) => c.getAttribute("data-id")),
 			filters: {
@@ -137,7 +140,11 @@
 				},
 				id: {
 					type: "text",
-					fn: (r) => r.find("ul.item div.target > a").attr("href").match(/\?XID=([\d]+)/)[1],
+					fn: (r) =>
+						r
+							.find("ul.item div.target > a")
+							.attr("href")
+							.match(/\?XID=([\d]+)/)[1],
 				},
 				level: {
 					type: "min-max",
@@ -149,10 +156,77 @@
 					type: "select",
 					options: STATUS_ENUM,
 					fn: (r) =>
-						STATUS_ENUM[r.find("ul.item div.status").children().last().text().toUpperCase()] ?? STATUS_ENUM.UNKNOWN,
-				}
-			}
-		}
+						STATUS_ENUM[r.find("ul.item div.status").children().last().text().toUpperCase()] ??
+						STATUS_ENUM.UNKNOWN,
+				},
+			},
+		},
+		{
+			check: () =>
+				document.location.pathname === "/page.php" &&
+				new URLSearchParams(document.location.search).get("sid").toLowerCase() === "userlist",
+			table: () => $("div.content-wrapper > div.userlist-wrapper > ul.user-info-list-wrap")[0],
+			rows: (t) => t.children,
+			insertFilters: (f) => f.insertAfter($("div.content-wrapper > div.content-title")),
+			filters: {
+				name: {
+					type: "text",
+					fn: (r) => r.find("a.user.name span.honor-text:not(.honor-text-svg)").text().trim(),
+				},
+				id: {
+					type: "text",
+					fn: (r) =>
+						r
+							.find("a.user.name")
+							.attr("href")
+							.match(/\?XID=([\d]+)/)[1],
+				},
+				level: {
+					type: "min-max",
+					min: 1,
+					max: 100,
+					fn: (r) => r.find(".level").children().last().text().trim(),
+				},
+				status: {
+					type: "select",
+					// There's no way to differentiate between traveling and abroad, so all are set to traveling.
+					options: Object.entries(STATUS_ENUM)
+						.filter(([k]) => k !== "ABROAD")
+						.reduce((a, [k, v]) => ((a[k] = v), a), {}),
+					fn: (r) => {
+						const icons = r.find("div.level-icons-wrap > .user-icons ul#iconTray > li").toArray();
+						for (const i of icons) {
+							const iconNumber = i.id?.match(/^icon([\d]+)_/)?.[1];
+							switch (iconNumber) {
+								case "15":
+									return STATUS_ENUM.HOSPITAL;
+								case "16":
+									return STATUS_ENUM.JAIL;
+								case "70":
+									return STATUS_ENUM.FEDERAL;
+								case "71":
+									return STATUS_ENUM.TRAVELING;
+								case "77":
+									return STATUS_ENUM.FALLEN;
+							}
+						}
+						return STATUS_ENUM.OKAY;
+					},
+					online: {
+						type: "select",
+						options: ONLINE_STATUS_ENUM,
+						fn: (r) =>
+							ONLINE_STATUS_ENUM[
+								r
+									.find("li > div:not(.level-icons-wrap) > ul#iconTray > li")
+									.text()
+									.match(/<b>([\w]+)<\/b>/)[1]
+									.toUpperCase()
+							] ?? ONLINE_STATUS_ENUM.UNKNOWN,
+					},
+				},
+			},
+		},
 	];
 
 	function init() {
