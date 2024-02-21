@@ -125,6 +125,34 @@
 				},
 			},
 		},
+		{
+			check: () => document.location.pathname === "/bounties.php",
+			table: () => $("div.content-wrapper > div.newspaper-wrap div.bounties-wrap > div.bounties-cont > ul.bounties-list")[0],
+			insertFilters: (f) => f.insertBefore($("div.content-wrapper > div.newspaper-wrap div.bounties-wrap")),
+			rows: (t) => [...t.children].filter((c) => c.getAttribute("data-id")),
+			filters: {
+				name: {
+					type: "text",
+					fn: (r) => r.find("ul.item div.target > a").text(),
+				},
+				id: {
+					type: "text",
+					fn: (r) => r.find("ul.item div.target > a").attr("href").match(/\?XID=([\d]+)/)[1],
+				},
+				level: {
+					type: "min-max",
+					min: 1,
+					max: 100,
+					fn: (r) => r.find("ul.item div.level")[0].lastChild.textContent.trim(),
+				},
+				status: {
+					type: "select",
+					options: STATUS_ENUM,
+					fn: (r) =>
+						STATUS_ENUM[r.find("ul.item div.status").children().last().text().toUpperCase()] ?? STATUS_ENUM.UNKNOWN,
+				}
+			}
+		}
 	];
 
 	function init() {
