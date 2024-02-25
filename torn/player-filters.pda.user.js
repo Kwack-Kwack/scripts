@@ -79,7 +79,10 @@
 			},
 		},
 		{
-			check: () => document.location.pathname === "/index.php" && $(document.body).data("abroad"),
+			check: () =>
+				document.location.pathname === "/index.php" &&
+				$(document.body).data("abroad") &&
+				new URLSearchParams(document.location.search).get("page") === "people",
 			table: () => $("div.content-wrapper > div.travel-people > ul.users-list")[0],
 			rows: (t) => t.children,
 			insertFilters: (f) => f.insertAfter($("div.content-wrapper > div.info-msg-cont").last()),
@@ -225,6 +228,15 @@
 							] ?? ONLINE_STATUS_ENUM.UNKNOWN,
 					},
 				},
+			},
+		},
+		{
+			check: () => {
+				if (document.location.pathname !== "/factions.php") return false;
+				const params = new URLSearchParams(document.location.search);
+				if (params.get("step") === "profile") return true;
+				if (params.get("step") === "your" && document.location.hash.includes("tab=info")) return true;
+				return false;
 			},
 		},
 	];
