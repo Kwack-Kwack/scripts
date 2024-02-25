@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Player Filters
 // @namespace    dev.kwack.torn.player-filters
-// @version      0.0.2
+// @version      0.0.3
 // @description  Adds player filters to various userlists in Torn City
 // @author       Kwack [2190604]
 // @match        https://www.torn.com/*
