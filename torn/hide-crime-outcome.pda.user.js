@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Hide Crime Outcome
 // @namespace    dev.kwack.torn.hide-crime-results
-// @version      2.0.1
+// @version      2.0.2
 // @description  Hides the crime outcome panel for quick clicking. Quick and dirty script
 // @author       Kwack [2190604]
 // @match        https://www.torn.com/loader.php?sid=crimes*
@@ -198,7 +198,7 @@
 
 		#kw--crimes-settings #kw--crimes-settings-save {
 			width: 100%;
-			padding: 0.25em;
+			padding: 1em;
 		}
 
 		.kw-hide {
