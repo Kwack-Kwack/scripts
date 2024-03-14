@@ -1,13 +1,14 @@
 // ==UserScript==
 // @name         Hide Crime Outcome
 // @namespace    dev.kwack.torn.hide-crime-results
-// @version      2.0.3
+// @version      2.1.3
 // @description  Hides the crime outcome panel for quick clicking. Quick and dirty script
 // @author       Kwack [2190604]
 // @match        https://www.torn.com/loader.php?sid=crimes*
 // @grant        GM_addStyle
 // @grant        GM_setValue
 // @grant        GM_getValue
+// @grant 	     unsafeWindow
 // @run-at 		 document-end
 // ==/UserScript==
 
@@ -15,7 +16,7 @@
 // Special shoutout to SpectraL1 [3118077] for both the script idea and the minimal mode
 
 (() => {
-	const SVG_SETTINGS = `<svg xmlns="http://www.w3.org/2000/svg" class="default___XXAGt " filter="" fill="#777" stroke="transparent" stroke-width="0" width="15" height="15" viewBox="0 0 23 23"><path d="M24 13.616v-3.232c-1.651-.587-2.694-.752-3.219-2.019v-.001c-.527-1.271.1-2.134.847-3.707l-2.285-2.285c-1.561.742-2.433 1.375-3.707.847h-.001c-1.269-.526-1.435-1.576-2.019-3.219h-3.232c-.582 1.635-.749 2.692-2.019 3.219h-.001c-1.271.528-2.132-.098-3.707-.847l-2.285 2.285c.745 1.568 1.375 2.434.847 3.707-.527 1.271-1.584 1.438-3.219 2.02v3.232c1.632.58 2.692.749 3.219 2.019.53 1.282-.114 2.166-.847 3.707l2.285 2.286c1.562-.743 2.434-1.375 3.707-.847h.001c1.27.526 1.436 1.579 2.019 3.219h3.232c.582-1.636.75-2.69 2.027-3.222h.001c1.262-.524 2.12.101 3.698.851l2.285-2.286c-.744-1.563-1.375-2.433-.848-3.706.527-1.271 1.588-1.44 3.221-2.021zm-12 2.384c-2.209 0-4-1.791-4-4s1.791-4 4-4 4 1.791 4 4-1.791 4-4 4z"></path></svg>`;
+	const SVG_SETTINGS = `<svg xmlns="http://www.w3.org/2000/svg" class="default___XXAGt " filter="" fill="currentcolor" stroke="transparent" stroke-width="0" width="15" height="15" viewBox="0 0 23 23"><path d="M24 13.616v-3.232c-1.651-.587-2.694-.752-3.219-2.019v-.001c-.527-1.271.1-2.134.847-3.707l-2.285-2.285c-1.561.742-2.433 1.375-3.707.847h-.001c-1.269-.526-1.435-1.576-2.019-3.219h-3.232c-.582 1.635-.749 2.692-2.019 3.219h-.001c-1.271.528-2.132-.098-3.707-.847l-2.285 2.285c.745 1.568 1.375 2.434.847 3.707-.527 1.271-1.584 1.438-3.219 2.02v3.232c1.632.58 2.692.749 3.219 2.019.53 1.282-.114 2.166-.847 3.707l2.285 2.286c1.562-.743 2.434-1.375 3.707-.847h.001c1.27.526 1.436 1.579 2.019 3.219h3.232c.582-1.636.75-2.69 2.027-3.222h.001c1.262-.524 2.12.101 3.698.851l2.285-2.286c-.744-1.563-1.375-2.433-.848-3.706.527-1.271 1.588-1.44 3.221-2.021zm-12 2.384c-2.209 0-4-1.791-4-4s1.791-4 4-4 4 1.791 4 4-1.791 4-4 4z"></path></svg>`;
 	const SVG_ARROW = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="44" viewBox="0 0 18 44"><path d="M0,44,15,22h3L3,44ZM15,22,0,0H3L18,22Z"></path></svg>`;
 	const MODES = [
 		{
@@ -32,6 +33,11 @@
 			name: "Minimal",
 			img: "https://i.imgur.com/NVxfsNV.gif",
 			description: "Hides only the story text, but keeps the important information",
+		},
+		{
+			name: "Toast",
+			img: "https://i.imgur.com/mBOJENd.gif",
+			description: "Shows a small toast notification in the bottom right corner with the outcome",
 		},
 		// More coming soon...
 	];
@@ -52,7 +58,11 @@
 			.children()
 			.first()
 			.after(
-				$("<a/>", { class: existing.attr("class"), id: "kw--crimes-settings-btn" })
+				$("<a/>", {
+					class: existing.attr("class"),
+					id: "kw--crimes-settings-btn",
+					style: "color: var(--kw--icon-color)",
+				})
 					.append(SVG_SETTINGS)
 					.append(new Text("Hide Outcome"))
 					.on("click", () => $("#kw--crimes-settings").removeClass("kw-hide"))
@@ -78,9 +88,10 @@
 					$("<div/>")
 						.append(
 							$("<h1/>", { text: "Hide Crime Outcome" }),
-							$("<div/>", { id: "kw--crimes-slider", style: `transform: translateX(-${modeIndex * 100}%)` }).append(
-								...MODES.map((mode) => generateSliderPage(mode, changeModeIndex))
-							),
+							$("<div/>", {
+								id: "kw--crimes-slider",
+								style: `transform: translateX(-${modeIndex * 100}%)`,
+							}).append(...MODES.map((mode) => generateSliderPage(mode, changeModeIndex))),
 							$("<button/>", { id: "kw--crimes-settings-save" })
 								.append("Save")
 								.on("click", () => {
@@ -119,6 +130,71 @@
 				.on("click", () => changeModeIndex(false))
 				.append($(SVG_ARROW))
 		);
+
+	const addToastContainer = () => $("body").append($("<div/>", { id: "kw--crimes-toast-container" }));
+	const showToast = (type, msg) => {
+		console.log({ type, msg });
+		let el;
+		$("#kw--crimes-toast-container").append(
+			(el = $("<div/>", { class: `kw--crimes-toast kw--crimes-toast-${type}`, text: `${type?.toUpperCase()} - ${msg}` }))
+		);
+		setTimeout(el.remove.bind(el), 5000);
+	};
+
+	const fetchInjection = (oldFetch) => {
+		const win = unsafeWindow ?? window;
+		win.fetch = (...args) =>
+			new Promise((resolve, reject) => {
+				oldFetch
+					.apply(this, args)
+					.then((r) => {
+						const url = new URL(r.url);
+						if ($(document.body).data("kw--crimes-mode") !== 3) return resolve(r);
+						if (
+							url.pathname === "/loader.php" &&
+							url.searchParams.get("sid") === "crimesData" &&
+							url.searchParams.get("step") === "attempt"
+						) {
+							r.clone()
+								.json()
+								.then((data) => {
+									const outcome = data?.DB?.outcome;
+									showToast(
+										outcome.result?.replaceAll(" ", ""),
+										outcome?.rewards?.map((r) => stringifyReward(r)).join(", ") ||
+											"No reward detected"
+									);
+								});
+						}
+						resolve(r);
+					})
+					.catch(reject);
+			});
+
+		function stringifyReward(reward) {
+			switch (reward.type.toLowerCase()) {
+				// MISSING: Losing an item critfail
+				case "money":
+					return reward.value ? `$${reward.value}` : "Issue parsing money amount";
+				case "jail":
+				case "hospital":
+					return reward.time
+						? `${reward.type === "jail" ? "Jailed" : "Hosped"} until ${new Date(
+								reward.time * 1000
+						  ).toLocaleString()}`
+						: `Issue parsing ${reward.type === "jail" ? "Jailed" : "Hosped"} time`;
+				case "items":
+					return Array.isArray(reward.value)
+						? reward.value.map(({ name, amount }) => `${amount}x ${name}`).join(", ")
+						: "Issue parsing item reward";
+				case "other":
+					return reward.textTablet || reward.text || "Unknown other reward text";
+				default:
+					console.warn(`Unexpected reward type ${reward.type} for reward ${JSON.stringify(reward)}`);
+					return `Unknown reward type ${reward.type}`;
+			}
+		}
+	};
 
 	const addStyle = () =>
 		GM_addStyle(`
@@ -204,16 +280,77 @@
 			display: none !important;
 		}
 
-		/* Outcome CSS */
-		body.kw--crimes-mode-hidden [class*=outcomePanel_] {
+		/* Outcome-specific CSS */
+		body.kw--crimes-mode-hidden {
+			--kw--icon-color: red;
+		}
+
+		body.kw--crimes-mode-minimal {
+			--kw--icon-color: orange;
+		}
+
+		body.kw--crimes-mode-toast {
+			--kw--icon-color: green;
+		}
+
+		body.kw--crimes-mode-disabled {
+			--kw--icon-color: #777;
+		}
+
+		body.kw--crimes-mode-hidden [class*=outcomePanel_], body.kw--crimes-mode-toast [class*=outcomePanel_] {
 			display: none;
 		}
 
 		body.kw--crimes-mode-minimal [class*=outcomePanel_] [class*=story_] {
 			display: none;
-			--icon-color: yellow;
+			
+		}
+
+		#kw--crimes-toast-container {
+			display: none;
+		}
+		/* Only show the toast container when in toast mode */
+		body.kw--crimes-mode-toast #kw--crimes-toast-container {
+			display: flex;
+			flex-direction: column-reverse;
+			position: fixed;
+			bottom: 0;
+			right: 0;
+			gap: 1px;
+			z-index: 9999999999;
+		}
+
+		#kw--crimes-toast-container .kw--crimes-toast {
+			--toast-bg: darkslategray;
+			--toast-color: white;
+			background: var(--toast-bg);
+			color: var(--toast-color);
+			padding: 1em;
+			border-radius: 0.5em;
+			margin: 0.5em;
+			transition: all 0.5s;
+			font-size: 1rem;
+			min-width: 10vw;
+		}
+
+		#kw--crimes-toast-container .kw--crimes-toast.kw--crimes-toast-criticalfailure {
+			--toast-bg: red;
+			--toast-color: white;
+		}
+
+		#kw--crimes-toast-container .kw--crimes-toast.kw--crimes-toast-failure {
+			--toast-bg: darkorange;
+			--toast-color: white;
+		}
+
+		#kw--crimes-toast-container .kw--crimes-toast.kw--crimes-toast-success {
+			--toast-bg: green;
+			--toast-color: white;
 		}
 	`);
-	mutationCallback();
+
 	addStyle();
+	addToastContainer();
+	fetchInjection(window.fetch);
+	mutationCallback();
 })();
