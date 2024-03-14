@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Hide Crime Outcome
 // @namespace    dev.kwack.torn.hide-crime-results
-// @version      2.0.2
+// @version      2.0.3
 // @description  Hides the crime outcome panel for quick clicking. Quick and dirty script
 // @author       Kwack [2190604]
 // @match        https://www.torn.com/loader.php?sid=crimes*
@@ -45,7 +45,6 @@
 	};
 	new MutationObserver(mutationCallback).observe($("div#react-root")[0], { childList: true, subtree: true });
 
-	/** @param {JQuery<HTMLDivElement>} header */
 	const addSettingsIcon = (header) => {
 		if (!header || !(header instanceof $)) return;
 		const existing = header.find("a");
@@ -148,7 +147,7 @@
 
 		#kw--crimes-settings > div {
 			margin: 14vh auto 0;
-			width: 100%;
+			width: 90vw;
 			max-width: 600px;
 			background: var(--chat-box-bg);
 			z-index: 99999;
