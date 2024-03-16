@@ -333,6 +333,10 @@
 			min-width: 10vw;
 		}
 
+		#kw--crimes-toast-container .kw--crimes-toast:not(:nth-last-child(-n+3)) {
+			display: none;
+		}
+
 		#kw--crimes-toast-container .kw--crimes-toast.kw--crimes-toast-criticalfailure {
 			--toast-bg: red;
 			--toast-color: white;
