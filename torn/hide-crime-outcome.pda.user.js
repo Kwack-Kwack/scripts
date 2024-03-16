@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Hide Crime Outcome
 // @namespace    dev.kwack.torn.hide-crime-results
-// @version      2.1.3
+// @version      2.2.0
 // @description  Hides the crime outcome panel for quick clicking. Quick and dirty script
 // @author       Kwack [2190604]
 // @match        https://www.torn.com/loader.php?sid=crimes*
@@ -21,22 +21,22 @@
 	const MODES = [
 		{
 			name: "Disabled",
-			img: "https://i.imgur.com/HjkJgh0.gif",
+			img: "https://raw.githubusercontent.com/Kwack-Kwack/scripts/main/static/images/hide-player-filters_mode-disabled.gif",
 			description: "Disables the script, showing the full crime outcome as normal.",
 		},
 		{
 			name: "Hidden",
-			img: "https://i.imgur.com/5R9aE46.gif",
+			img: "https://raw.githubusercontent.com/Kwack-Kwack/scripts/main/static/images/hide-player-filters_mode-hidden.gif",
 			description: "Hides the crime outcome content completely, ideal for quickly spamming crimes.",
 		},
 		{
 			name: "Minimal",
-			img: "https://i.imgur.com/NVxfsNV.gif",
+			img: "https://raw.githubusercontent.com/Kwack-Kwack/scripts/main/static/images/hide-player-filters_mode-minimal.gif",
 			description: "Hides only the story text, but keeps the important information",
 		},
 		{
 			name: "Toast",
-			img: "https://i.imgur.com/mBOJENd.gif",
+			img: "https://raw.githubusercontent.com/Kwack-Kwack/scripts/main/static/images/hide-player-filters_mode-toast.gif",
 			description: "Shows a small toast notification in the bottom right corner with the outcome",
 		},
 		// More coming soon...
