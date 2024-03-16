@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Hide Crime Outcome
 // @namespace    dev.kwack.torn.hide-crime-results
-// @version      2.2.1
+// @version      2.2.2
 // @description  Hides the crime outcome panel for quick clicking. Quick and dirty script
 // @author       Kwack [2190604]
 // @match        https://www.torn.com/loader.php?sid=crimes*
@@ -117,7 +117,7 @@
 				.filter((c) => c.startsWith("kw--crimes-mode-"))
 				.join(" ")
 		);
-		$("body").addClass("kw--crimes-mode-" + MODES[modeIndex].name.toLowerCase());
+		$("body").addClass("kw--crimes-mode-" + MODES[typeof modeIndex === "number" ? modeIndex : 0].name.toLowerCase());
 	};
 
 	const generateSliderPage = ({ img, name }, changeModeIndex) =>
