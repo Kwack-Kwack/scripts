@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Hide Crime Outcome
 // @namespace    dev.kwack.torn.hide-crime-results
-// @version      2.2.2
+// @version      2.2.3
 // @description  Hides the crime outcome panel for quick clicking. Quick and dirty script
 // @author       Kwack [2190604]
 // @match        https://www.torn.com/loader.php?sid=crimes*
@@ -109,6 +109,17 @@
 	const setSetting = (key, value) => GM_setValue(`kw.hide-outcome.settings.${key}`, value);
 
 	const setMode = (modeIndex) => {
+		if (typeof modeIndex !== "number") {
+			const parsed = parseInt(modeIndex);
+			if (isNaN(parsed)) {
+				console.error(`Invalid modeIndex ${modeIndex}, defaulting to 0`);
+				modeIndex = 0;
+			} else modeIndex = parsed;
+		}
+		if (modeIndex < 0 || modeIndex >= MODES.length) {
+			console.error(`Out of bounds modeIndex ${modeIndex}, defaulting to 0`);
+			modeIndex = 0;
+		}
 		setSetting("mode", modeIndex);
 		$("body").data("kw--crimes-mode", modeIndex);
 		$("body").removeClass((_, c) =>
@@ -117,7 +128,7 @@
 				.filter((c) => c.startsWith("kw--crimes-mode-"))
 				.join(" ")
 		);
-		$("body").addClass("kw--crimes-mode-" + MODES[typeof modeIndex === "number" ? modeIndex : 0].name.toLowerCase());
+		$("body").addClass("kw--crimes-mode-" + MODES[modeIndex].name.toLowerCase());
 	};
 
 	const generateSliderPage = ({ img, name }, changeModeIndex) =>
@@ -136,7 +147,10 @@
 		console.log({ type, msg });
 		let el;
 		$("#kw--crimes-toast-container").append(
-			(el = $("<div/>", { class: `kw--crimes-toast kw--crimes-toast-${type}`, text: `${type?.toUpperCase()} - ${msg}` }))
+			(el = $("<div/>", {
+				class: `kw--crimes-toast kw--crimes-toast-${type}`,
+				text: `${type?.toUpperCase()} - ${msg}`,
+			}))
 		);
 		setTimeout(el.remove.bind(el), 5000);
 	};
