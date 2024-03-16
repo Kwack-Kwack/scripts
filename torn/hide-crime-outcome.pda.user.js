@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Hide Crime Outcome
 // @namespace    dev.kwack.torn.hide-crime-results
-// @version      2.2.0
+// @version      2.2.1
 // @description  Hides the crime outcome panel for quick clicking. Quick and dirty script
 // @author       Kwack [2190604]
 // @match        https://www.torn.com/loader.php?sid=crimes*
@@ -142,8 +142,11 @@
 	};
 
 	const fetchInjection = (oldFetch) => {
-		const win = unsafeWindow ?? window;
-		win.fetch = (...args) =>
+		let win;
+		try {
+			win = unsafeWindow || window;
+		} catch {} // do nothing
+		(win || window).fetch = (...args) =>
 			new Promise((resolve, reject) => {
 				oldFetch
 					.apply(this, args)
