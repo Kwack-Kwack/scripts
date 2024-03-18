@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Hide Crime Outcome
 // @namespace    dev.kwack.torn.hide-crime-results
-// @version      2.2.3
+// @version      2.2.4
 // @description  Hides the crime outcome panel for quick clicking. Quick and dirty script
 // @author       Kwack [2190604]
 // @match        https://www.torn.com/loader.php?sid=crimes*
@@ -195,15 +195,20 @@
 					return reward.value ? `$${reward.value}` : "Issue parsing money amount";
 				case "jail":
 				case "hospital":
-					return reward.time
+					debugger;
+					return reward.value
 						? `${reward.type === "jail" ? "Jailed" : "Hosped"} until ${new Date(
-								reward.time * 1000
-						  ).toLocaleString()}`
+								reward.value * 1000
+						  ).toLocaleTimeString()}`
 						: `Issue parsing ${reward.type === "jail" ? "Jailed" : "Hosped"} time`;
 				case "items":
 					return Array.isArray(reward.value)
 						? reward.value.map(({ name, amount }) => `${amount}x ${name}`).join(", ")
-						: "Issue parsing item reward";
+						: `Issue parsing reward "${reward.type}"`;
+				case "ammo":
+					return reward.value.name && reward.value.amount
+						? `${reward.value.amount}x ${reward.value.name}`
+						: `Issue parsing ammo reward`;
 				case "other":
 					return reward.textTablet || reward.text || "Unknown other reward text";
 				default:
