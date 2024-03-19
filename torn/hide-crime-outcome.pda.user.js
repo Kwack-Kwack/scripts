@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Hide Crime Outcome
 // @namespace    dev.kwack.torn.hide-crime-results
-// @version      2.2.5.1
+// @version      2.2.6
 // @description  Hides the crime outcome panel for quick clicking. Quick and dirty script
 // @author       Kwack [2190604]
 // @match        https://www.torn.com/loader.php?sid=crimes*
@@ -23,21 +23,25 @@
 			name: "Disabled",
 			img: "https://raw.githubusercontent.com/Kwack-Kwack/scripts/main/static/images/hide-player-filters_mode-disabled.gif",
 			description: "Disables the script, showing the full crime outcome as normal.",
+			color: "#777",
 		},
 		{
 			name: "Hidden",
 			img: "https://raw.githubusercontent.com/Kwack-Kwack/scripts/main/static/images/hide-player-filters_mode-hidden.gif",
 			description: "Hides the crime outcome content completely, ideal for quickly spamming crimes.",
+			color: "red",
 		},
 		{
 			name: "Minimal",
 			img: "https://raw.githubusercontent.com/Kwack-Kwack/scripts/main/static/images/hide-player-filters_mode-minimal.gif",
-			description: "Hides only the story text, but keeps the important information",
+			description: "Hides only the story text, but keeps the important information.",
+			color: "orange",
 		},
 		{
 			name: "Toast",
 			img: "https://raw.githubusercontent.com/Kwack-Kwack/scripts/main/static/images/hide-player-filters_mode-toast.gif",
 			description: "Shows a small toast notification in the bottom right corner with the outcome",
+			color: "green",
 		},
 		// More coming soon...
 	];
@@ -131,12 +135,12 @@
 		$("body").addClass("kw--crimes-mode-" + MODES[modeIndex].name.toLowerCase());
 	};
 
-	const generateSliderPage = ({ img, name }, changeModeIndex) =>
+	const generateSliderPage = ({ img, name, color }, changeModeIndex) =>
 		$(`<div/>`, { class: "kw--crimes-slider-page" }).append(
 			$("<button/>", { style: "transform: scaleX(-1)" })
 				.on("click", () => changeModeIndex(true))
 				.append($(SVG_ARROW)),
-			$("<div/>").append($("<h2/>", { text: name }), $("<img/>", { src: img, alt: name })),
+			$("<div/>").append($("<h2/>", { text: name, style: `color: ${color}` }), $("<img/>", { src: img, alt: name })),
 			$("<button/>")
 				.on("click", () => changeModeIndex(false))
 				.append($(SVG_ARROW))
@@ -156,6 +160,7 @@
 	};
 
 	const fetchInjection = (oldFetch) => {
+		// Yes this seems like a stupid way of doing it, but it's consistent on iOS devices, unlike typeof unsafeWindow.
 		let win;
 		try {
 			win = unsafeWindow || window;
@@ -165,27 +170,32 @@
 				oldFetch
 					.apply(this, args)
 					.then((r) => {
-						const url = new URL(r.url);
-						if ($(document.body).data("kw--crimes-mode") !== 3) return resolve(r);
-						if (
-							url.pathname === "/loader.php" &&
-							url.searchParams.get("sid") === "crimesData" &&
-							url.searchParams.get("step") === "attempt"
-						) {
-							r.clone()
-								.json()
-								.then((data) => {
-									const outcome = data?.DB?.outcome;
-									showToast(
-										outcome.result?.replaceAll(" ", ""),
-										outcome?.rewards?.map((r) => stringifyReward(r)).join(", ") ||
-											"No reward detected"
-									);
-								});
+						try {
+							const url = new URL(r.url);
+							if ($(document.body).data("kw--crimes-mode") !== 3) return resolve(r);
+							if (
+								url.pathname === "/loader.php" &&
+								url.searchParams.get("sid") === "crimesData" &&
+								url.searchParams.get("step") === "attempt"
+							) {
+								r.clone()
+									.json()
+									.then((data) => {
+										const outcome = data?.DB?.outcome;
+										showToast(
+											outcome.result?.replaceAll(" ", ""),
+											outcome?.rewards?.map((r) => stringifyReward(r)).join(", ") ||
+												"No reward detected"
+										);
+									});
+							}
+							resolve(r);
+						} catch (e) {
+							console.error(`kw--hide-crime-outcome fetchInject error ${e.toString()}`);
+							resolve(r); // Resolve the original response - this error is an error in the intercept, not the request
 						}
-						resolve(r);
 					})
-					.catch(reject);
+					.catch(reject); // Reject with original error
 			});
 
 		function stringifyReward(reward) {
@@ -218,7 +228,15 @@
 		}
 	};
 
-	const addStyle = () =>
+	const addStyle = (modes) => {
+		const modeStyles = modes
+			.map(
+				(m) => `body.kw--crimes-mode-${m.name.toLowerCase()} {
+			--kw--icon-color: ${m.color};
+		}`
+			)
+			.join("\n\n");
+		GM_addStyle(modeStyles);
 		GM_addStyle(`
 		#kw--crimes-settings {
 			position: fixed;
@@ -301,8 +319,7 @@
 		.kw-hide {
 			display: none !important;
 		}
-
-		/* Outcome-specific CSS */
+		
 		body.kw--crimes-mode-hidden {
 			--kw--icon-color: red;
 		}
@@ -374,8 +391,9 @@
 			--toast-color: white;
 		}
 	`);
+	};
 
-	addStyle();
+	addStyle(MODES);
 	addToastContainer();
 	fetchInjection(window.fetch);
 	mutationCallback();
