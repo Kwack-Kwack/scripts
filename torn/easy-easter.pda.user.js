@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Easy Easter (PDA)
 // @namespace    dev.kwack.torn.easy-easter
-// @version      1.0.0
+// @version      1.0.1
 // @description  Detects any eggs on the page and embeds a navigator to jump to any pages. Quick and dirty in classic Kwack fashion
 // @author       Kwack [2190604]
 // @match        https://www.torn.com/*
@@ -98,6 +98,7 @@ const eggButtonSelector = "button";
 			left: 0 !important;
 			height: 100vh !important;
 			width: 100vw !important;
+			z-index: 999999998;
 		}
 	
 		.kw--egg-easy-mode img {
@@ -114,6 +115,7 @@ const eggButtonSelector = "button";
 			color: #000;
 			padding: 0.5rem;
 			border-radius: 0.5rem;
+			z-index: 999999999;
 		}
 
 		body.dark-mode button#kw--egg-navigator {
