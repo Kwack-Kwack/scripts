@@ -116,6 +116,7 @@ const eggButtonSelector = "button";
 			padding: 0.5rem;
 			border-radius: 0.5rem;
 			z-index: 999999999;
+			cursor: pointer;
 		}
 
 		body.dark-mode button#kw--egg-navigator {
