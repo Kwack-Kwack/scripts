@@ -37,9 +37,7 @@
 	}
 
 	async function rebuildFilters() {
-		console.log("Rebuilding...")
 		const container = await waitForContainer();
-		console.log(container.children());
 		disableFilters(); // Remove all lingering filters
 		addFilterElement(container);
 	}
@@ -52,7 +50,6 @@
 				count = 0;
 				const id = setInterval(() => {
 					el = $("div.userlist-wrapper > ul.user-info-list-wrap");
-					console.log(el);
 					if (isReady(el)) {
 						resolve(el);
 						clearInterval(id);
@@ -80,7 +77,7 @@
 	}
 
 	function addFilterElement(container) {
-		if (!container) return console.error("Could not find container element");
+		if (!container) return console.error("Missing container element!");
 		container.find(".kw--hospital-filters-container").remove();
 		const parent = $("div.content-wrapper > div.msg-info-wrap");
 		parent.children().each((_, el) => el.classList.add("kw--hidden"));
