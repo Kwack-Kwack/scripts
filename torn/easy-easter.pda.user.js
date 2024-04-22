@@ -262,7 +262,6 @@ function getAllLinks() {
 		"page.php?sid=holdemStats",
 		"loader.php?sid=viewRussianRouletteLastGames",
 		"loader.php?sid=viewRussianRouletteStats",
-		"newspaper.php#/archive",
 		"messageinc2.php#!p=viewall",
 		"bazaar.php#/add",
 		"blacklist.php#p=add",
