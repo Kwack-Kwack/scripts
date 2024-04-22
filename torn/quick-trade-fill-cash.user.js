@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Quick-Trade-Fill-Cash
 // @namespace    dev.kwack.torn.qtfc
-// @version      0.0.1
+// @version      0.1.1
 // @description  Instantly fills trade with your cash on hand. You're responsible for the consequences if it fails. Quick and dirty script.
 // @author       Kwack [2190604]
 // @match        https://www.torn.com/trade.php*
@@ -24,9 +24,17 @@ const kw_qtfc_callback = async () => {
 			]).toString(),
 			headers: {
 				"X-Requested-With": "XMLHttpRequest",
-				"content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+				"Content-Type": "application/x-www-form-urlencoded",
 			},
 		});
+	const getFullMoneyRequest = (rfcv, id) =>
+		fetch(`https://www.torn.com/trade.php?step=getFullMoney&ID=${id}&rfcv=${rfcv}`, {
+			headers: {
+				"X-Requested-With": "XMLHttpRequest",
+			},
+		})
+			.then((r) => r.text())
+			.then((t) => parseInt(t.replaceAll(",", "")));
 	const addButton = () =>
 		$("button#kw--qtfc-fill-cash").length ||
 		$("<button>")
@@ -45,18 +53,23 @@ const kw_qtfc_callback = async () => {
 		$("#kw--qtfc-fill-cash")
 			.prop("disabled", true)
 			.text(`Waiting for balance change from \$${balanceElement.text()}, please wait...`);
-		const currentBalance = balanceElement.text();
-		const newBalance = await readyPromise(balanceElement, currentBalance);
+		const currentBalance = parseInt(balanceElement.text().replaceAll(",", ""));
+		const currentMax = await getFullMoneyRequest(getRfcv(), getId());
+		const amountInTrade = currentMax - currentBalance;
+
+		const newBalance = parseInt(await readyPromise(balanceElement, currentBalance));
+		const total = newBalance + amountInTrade;
+		console.log({ currentBalance, amountInTrade, currentMax, newBalance });
 		if (isNaN(newBalance)) {
 			$("#kw--qtfc-fill-cash").text("Error: Balance not found, try the old fashioned way");
 			return;
 		}
 		$("#kw--qtfc-fill-cash")
-			.text(`ADD ${newBalance} TO TRADE`)
+			.text(`ADD ${total} TO TRADE`)
 			.removeProp("disabled")
 			.on("click", () =>
-				addMoneyToTradeRequest(getRfcv(), getId(), newBalance).then((r) =>
-					r.ok ? alert(`Added $${newBalance} to trade`) : alert("Error: " + r.status)
+				addMoneyToTradeRequest(getRfcv(), getId(), total).then((r) =>
+					r.ok ? alert(`Added $${total} to trade`) : alert("Error: " + r.status)
 				)
 			);
 	};
