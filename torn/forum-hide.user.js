@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Forum Hide
 // @namespace    dev.kwack.torn.forum-hide
-// @version      1.0.0
+// @version      1.0.1
 // @description  Hides content from the forums, very quick and dirty
 // @author       Kwack [2190604]
 // @match        https://www.torn.com/forums.php
@@ -20,4 +20,7 @@ if (typeof GM_registerMenuCommand === "function") {
 	GM_registerMenuCommand("Toggle images", () => {
 		document.body.classList.toggle("kw-forum-hide-images")
 	});
+} else {
+	console.warn("No function GM_registerMenuCommand, enabling by default...");
+	document.body.classList.add("kw-forum-hide-images")
 }
