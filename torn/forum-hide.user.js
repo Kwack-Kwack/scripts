@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Forum Hide
 // @namespace    dev.kwack.torn.forum-hide
-// @version      1.0.1
+// @version      1.1.0
 // @description  Hides content from the forums, very quick and dirty
 // @author       Kwack [2190604]
 // @match        https://www.torn.com/forums.php
