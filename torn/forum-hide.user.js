@@ -14,13 +14,28 @@ GM_addStyle(`
 	body.kw-forum-hide-images .post-container img {
 		display: none !important;
 	}
-`)
+`);
+
+const loadPrevious = () => {
+	const old = localStorage.getItem("kw-forum-hide-images-enabled") === "true";
+	return old;
+};
+
+const persistentToggle = () => {
+	const old = loadPrevious();
+	if (!old) {
+		localStorage.setItem("kw-forum-hide-images-enabled", "true");
+		document.body.classList.add("kw-forum-hide-images");
+	} else {
+		localStorage.setItem("kw-forum-hide-images-enabled", "false");
+		document.body.classList.remove("kw-forum-hide-images");
+	}
+};
 
 if (typeof GM_registerMenuCommand === "function") {
-	GM_registerMenuCommand("Toggle images", () => {
-		document.body.classList.toggle("kw-forum-hide-images")
-	});
+	GM_registerMenuCommand("Toggle images", persistentToggle);
+	if (loadPrevious()) document.body.classList.add("kw-forum-hide-images");
 } else {
 	console.warn("No function GM_registerMenuCommand, enabling by default...");
-	document.body.classList.add("kw-forum-hide-images")
+	document.body.classList.add("kw-forum-hide-images");
 }
