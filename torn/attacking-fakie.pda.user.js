@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Attacking Fakie
 // @namespace    dev.kwack.torn.attacking-fakie
-// @version      0.0.1
+// @version      1.0.0
 // @description  Inverts the attacking layout horizontally, placing buttons on the right side of the screen
 // @author       Kwack [2190604]
 // @match        https://www.torn.com/loader.php
