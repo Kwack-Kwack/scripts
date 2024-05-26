@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Hide Crime Outcome
 // @namespace    dev.kwack.torn.hide-crime-results
-// @version      2.2.6
+// @version      2.2.7
 // @description  Hides the crime outcome panel for quick clicking. Quick and dirty script
 // @author       Kwack [2190604]
 // @match        https://www.torn.com/loader.php?sid=crimes*
@@ -140,7 +140,10 @@
 			$("<button/>", { style: "transform: scaleX(-1)" })
 				.on("click", () => changeModeIndex(true))
 				.append($(SVG_ARROW)),
-			$("<div/>").append($("<h2/>", { text: name, style: `color: ${color}` }), $("<img/>", { src: img, alt: name })),
+			$("<div/>").append(
+				$("<h2/>", { text: name, style: `color: ${color}` }),
+				$("<img/>", { src: img, alt: name })
+			),
 			$("<button/>")
 				.on("click", () => changeModeIndex(false))
 				.append($(SVG_ARROW))
@@ -205,7 +208,6 @@
 					return reward.value ? `$${reward.value}` : "Issue parsing money amount";
 				case "jail":
 				case "hospital":
-					debugger;
 					return reward.value
 						? `${reward.type === "jail" ? "Jailed" : "Hosped"} until ${new Date(
 								reward.value * 1000
@@ -221,6 +223,7 @@
 						: `Issue parsing ammo reward`;
 				case "other":
 					return reward.textTablet || reward.text || "Unknown other reward text";
+				case "injury": return reward.value ? `Lost ${reward.value} life` : "Issue parsing injury amount";
 				default:
 					console.warn(`Unexpected reward type ${reward.type} for reward ${JSON.stringify(reward)}`);
 					return `Unknown reward type ${reward.type}`;
