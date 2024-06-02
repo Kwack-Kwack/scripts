@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Hide Crime Outcome
 // @namespace    dev.kwack.torn.hide-crime-results
-// @version      2.2.7
+// @version      2.2.8
 // @description  Hides the crime outcome panel for quick clicking. Quick and dirty script
 // @author       Kwack [2190604]
 // @match        https://www.torn.com/loader.php?sid=crimes*
@@ -339,11 +339,12 @@
 			--kw--icon-color: #777;
 		}
 
-		body.kw--crimes-mode-hidden [class*=outcomePanel_], body.kw--crimes-mode-toast [class*=outcomePanel_] {
+		body.kw--crimes-mode-hidden [class*=outcomePanel_], body.kw--crimes-mode-toast [class*=outcomePanel_],
+		body.kw--crimes-mode-hidden [class*=outcomeWrapper_], body.kw--crimes-mode-toast [class*=outcomeWrapper_] {
 			display: none;
 		}
 
-		body.kw--crimes-mode-minimal [class*=outcomePanel_] [class*=story_] {
+		body.kw--crimes-mode-minimal [class*=outcomePanel_] [class*=story_], body.kw--crimes-mode-minimal [class*=outcomeWrapper_] [class*=story_] {
 			display: none;
 			
 		}
