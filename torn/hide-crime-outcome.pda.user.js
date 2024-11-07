@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Hide Crime Outcome
 // @namespace    dev.kwack.torn.hide-crime-results
-// @version      2.2.8
+// @version      2.2.9
 // @description  Hides the crime outcome panel for quick clicking. Quick and dirty script
 // @author       Kwack [2190604]
 // @match        https://www.torn.com/loader.php?sid=crimes*
@@ -162,13 +162,16 @@
 		setTimeout(el.remove.bind(el), 5000);
 	};
 
-	const fetchInjection = (oldFetch) => {
-		// Yes this seems like a stupid way of doing it, but it's consistent on iOS devices, unlike typeof unsafeWindow.
-		let win;
+	const getWindow = () => {
 		try {
-			win = unsafeWindow || window;
-		} catch {} // do nothing
-		(win || window).fetch = (...args) =>
+			return typeof unsafeWindow === "undefined" ? window : unsafeWindow;
+		} catch {
+			return window;
+		}
+	}
+
+	const fetchInjection = (oldFetch) => {
+		getWindow().fetch = (...args) =>
 			new Promise((resolve, reject) => {
 				oldFetch
 					.apply(this, args)
@@ -399,6 +402,6 @@
 
 	addStyle(MODES);
 	addToastContainer();
-	fetchInjection(window.fetch);
+	fetchInjection(getWindow().fetch);
 	mutationCallback();
 })();
