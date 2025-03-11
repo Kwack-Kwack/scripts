@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Hide Crime Outcome
 // @namespace    dev.kwack.torn.hide-crime-results
-// @version      2.2.9
+// @version      2.2.10
 // @description  Hides the crime outcome panel for quick clicking. Quick and dirty script
 // @author       Kwack [2190604]
 // @match        https://www.torn.com/loader.php?sid=crimes*
@@ -180,7 +180,7 @@
 							const url = new URL(r.url);
 							if ($(document.body).data("kw--crimes-mode") !== 3) return resolve(r);
 							if (
-								url.pathname === "/loader.php" &&
+								url.pathname === "/page.php" &&
 								url.searchParams.get("sid") === "crimesData" &&
 								url.searchParams.get("step") === "attempt"
 							) {
