@@ -1,15 +1,16 @@
 // ==UserScript==
 // @name         Hide Crime Outcome
 // @namespace    dev.kwack.torn.hide-crime-results
-// @version      2.2.10
+// @version      2.2.11
 // @description  Hides the crime outcome panel for quick clicking. Quick and dirty script
 // @author       Kwack [2190604]
 // @match        https://www.torn.com/loader.php?sid=crimes*
+// @match        https://www.torn.com/page.php?sid=crimes*
 // @grant        GM_addStyle
 // @grant        GM_setValue
 // @grant        GM_getValue
-// @grant 	     unsafeWindow
-// @run-at 		 document-end
+// @grant 	 unsafeWindow
+// @run-at       document-end
 // ==/UserScript==
 
 // I hope you like spaghetti 🍝
